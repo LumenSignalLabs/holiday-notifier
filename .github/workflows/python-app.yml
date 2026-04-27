@@ -1,0 +1,30 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+   schedule:
+     - cron: '0 0 * * *' # 每天北京时间 8:00 运行
+   workflow_dispatch: # 允许手动从 GitHub 界面触发
+
+permissions:
+  contents: read
+
+jobs:
+  run-notifier:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install aiohttp[speedups] stackprinter git+https://github.com/LumenSignalLabs/proj_common.git
+    - name: Run script
+      run: python notifier.py
+      env:
+        PROJ_COMMON_CONFIG: ${{ secrets.PROJ_COMMON_CONFIG }}
