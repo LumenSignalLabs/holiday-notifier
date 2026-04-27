@@ -7,6 +7,8 @@ from proj_common import logger, http_retry, send_notification
 DUE_DAY = 8
 # 提前提醒的工作日天数
 ADVANCE_WORKDAYS = 3
+# 是否将调休补班日当作工作日
+INCLUDE_COMPENSATION = False
 
 async def is_workday(session, date_str):
     """
@@ -26,7 +28,10 @@ async def is_workday(session, date_str):
         if holiday_info is None:
             return res['type']['type'] == 0
         else:
-            return not holiday_info['holiday']
+            # holiday 为 True 表示放假，False 表示调休补班
+            if not holiday_info['holiday']:
+                return INCLUDE_COMPENSATION
+            return False
 
 async def main():
     today = datetime.date.today()

@@ -124,3 +124,19 @@ async def test_real_api_cross_year_logic(base_mocks):
     # 12-31, 01-02, 01-03, 01-06, 01-07, 01-08 共有 6 个工作日，不触发
     mock_send.assert_not_called()
 
+@pytest.mark.asyncio
+async def test_compensation_config_off(base_mocks):
+    """
+    测试当 INCLUDE_COMPENSATION = False 时，调休补班日不计入工作日
+    日期：2025-02-05 (周三)
+    明天起日期：06(四), 07(五), 08(六补班)
+    如果 INCLUDE_COMPENSATION = False，则只有 06, 07 两个工作日，不应触发（ADVANCE_WORKDAYS=3）
+    """
+    mock_date, mock_send = base_mocks
+    mock_date.today.return_value = REAL_DATE(2025, 2, 5)
+
+    with patch('notifier.INCLUDE_COMPENSATION', False):
+        await notifier.main()
+
+    mock_send.assert_not_called()
+
