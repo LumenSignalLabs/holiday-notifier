@@ -1,0 +1,18 @@
+# Secrets
+config.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
